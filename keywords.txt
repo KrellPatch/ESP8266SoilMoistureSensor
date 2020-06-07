@@ -1,0 +1,31 @@
+#######################################
+# Syntax Coloring Map For Ultrasound
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+ESP8266SoilMoistureSensor	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+read		KEYWORD2
+setReadPin	KEYWORD2
+setPowerPin	KEYWORD2
+setContinuous	KEYWORD2
+setSamples	KEYWORD2
+setMinCalibration	KEYWORD2
+setMaxCalibration	KEYWORD2
+readPin		KEYWORD2
+powerPin	KEYWORD2
+continuous	KEYWORD2
+minCalibration	KEYWORD2
+maxCalibration	KEYWORD2
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+
