@@ -10,6 +10,8 @@
 
 #include "Arduino.h"
 
+#define VERSION_ 1.0
+
 #ifdef __DEBUG
   #define DPRINT(...)    Serial.print(__VA_ARGS__)     //DPRINT is a macro, debug print
   #define DPRINTLN(...)  Serial.println(__VA_ARGS__)   //DPRINTLN is a macro, debug print with new line
