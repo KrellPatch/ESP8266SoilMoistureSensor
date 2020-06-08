@@ -40,6 +40,8 @@ public:
 	int			minCalibration();
 	void		setMaxCalibration(int);
 	int			maxCalibration();
+	void		setMeasurePercentage(bool);
+	bool		measurePercentage();
 
 private:
 	uint8_t	_readPin;

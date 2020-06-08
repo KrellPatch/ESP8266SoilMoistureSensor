@@ -48,8 +48,10 @@ int ESP8266SoilMoistureSensor::read() {
 	value /= _samples;
 
 	if(_measurePercentage) {
+		// Return %H
 		value = map(value, _minCalibration, _maxCalibration, 0, 100)
 	} else {
+		// return CB value (inverted, 200 = dry, 0 = wet)
 		value = map(value, _maxCalibration, _minCalibration, 0, 200);
 	}
 
