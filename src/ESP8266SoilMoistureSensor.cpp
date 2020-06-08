@@ -7,23 +7,21 @@
 
 #include "ESP8266SoilMoistureSensor.h"
 
-ESP8266SoilMoistureSensor::ESP8266SoilMoistureSensor() :
-	_readPin {0},
-	_powerPin {0},
+ESP8266SoilMoistureSensor::ESP8266SoilMoistureSensor(uint8_t readPin, uint8_t powerPin) :
+	_readPin {readPin},
+	_powerPin {powerPin}
 	_samples {10},
 	_continuous {false},
 	_minCalibration {5},
-	_maxCalibration {650}
+	_maxCalibration {650} // Default value for 3.3V VCC, may be higher when using 5V
 {}
 
 ESP8266SoilMoistureSensor::ESP8266SoilMoistureSensor(uint8_t readPin) :
 	ESP8266SoilMoistureSensor {readPin, 0}
 {}
 
-ESP8266SoilMoistureSensor::ESP8266SoilMoistureSensor(uint8_t readPin, uint8_t powerPin) :
-	ESP8266SoilMoistureSensor(),
-	_readPin {readPin},
-	_powerPin {powerPin}
+ESP8266SoilMoistureSensor::ESP8266SoilMoistureSensor() :
+	ESM8266SoilMoistureSensor {0, 0}
 {}
 
 ESP8266SoilMoistureSensor::~ESP8266SoilMoistureSensor() {}
@@ -33,19 +31,25 @@ ESP8266SoilMoistureSensor::~ESP8266SoilMoistureSensor() {}
 int ESP8266SoilMoistureSensor::read() {
 	int value = 0;
 
+	// ToDo: Rethink the logic of continuous and powerPin
+
 	// If not continuous, set powerPin high
-	if(!_continuous) digitalWrite(_powerPin, HIGH);
+	if(!_continuous && _powerPin) digitalWrite(_powerPin, HIGH);
 	// measurements
 	for(int i = 0; i < _samples; ++i) {
 		value += analogRead(_readPin);
 		// ToDO: need delay here?
 	}
 	// reset powerpin if required
-	if(!_continuous) digitalWrite(_powerPin, LOW);
+	if(!_continuous && _powerPin) digitalWrite(_powerPin, LOW);
 
 	// Take average reading and remap to CB value (wet-dry, 0-200)
 	value /= _samples;
 	value = map(value, _maxCalibration, _minCalibration, 0, 200);
+
+	// %H would be
+	//value = map(value, _minCalibration, _maxCalibration, 0, 100)
+	// ToDo: implement choice for CB or %H calculation with default.
 
 	return value;
 } // read()
