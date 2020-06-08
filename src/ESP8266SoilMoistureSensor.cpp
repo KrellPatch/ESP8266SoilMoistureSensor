@@ -13,7 +13,8 @@ ESP8266SoilMoistureSensor::ESP8266SoilMoistureSensor(uint8_t readPin, uint8_t po
 	_samples {10},
 	_continuous {false},
 	_minCalibration {5},
-	_maxCalibration {650} // Default value for 3.3V VCC, may be higher when using 5V
+	_maxCalibration {650}, // Default value for 3.3V VCC, may be higher when using 5V
+	_measurePercentage {false}
 {}
 
 ESP8266SoilMoistureSensor::ESP8266SoilMoistureSensor(uint8_t readPin) :
@@ -45,11 +46,12 @@ int ESP8266SoilMoistureSensor::read() {
 
 	// Take average reading and remap to CB value (wet-dry, 0-200)
 	value /= _samples;
-	value = map(value, _maxCalibration, _minCalibration, 0, 200);
 
-	// %H would be
-	//value = map(value, _minCalibration, _maxCalibration, 0, 100)
-	// ToDo: implement choice for CB or %H calculation with default.
+	if(_measurePercentage) {
+		value = map(value, _minCalibration, _maxCalibration, 0, 100)
+	} else {
+		value = map(value, _maxCalibration, _minCalibration, 0, 200);
+	}
 
 	return value;
 } // read()
@@ -71,11 +73,16 @@ uint8_t	ESP8266SoilMoistureSensor::powerPin() 														{ return _powerPin; 
 void 		ESP8266SoilMoistureSensor::setContinuous(bool continuous) 				{ _continuous = continuous; }
 bool 		ESP8266SoilMoistureSensor::continuous() 													{ return _continuous; }
 
-// Calibration values: set thew minimum and maximum value returned by your sensor
+// Calibration values: set the minimum and maximum value returned by your sensor
 // This makes sure the lowest and highest values are consistently mapped to CP values
 // Defaults 5 and 650
 void 		ESP8266SoilMoistureSensor::setMinCalibration(int minCalibration) 	{	_minCalibration = minCalibration; }
 int			ESP8266SoilMoistureSensor::minCalibration() 											{	return _minCalibration; }
 void 		ESP8266SoilMoistureSensor::setMaxCalibration(int maxCalibration) 	{	_maxCalibration = maxCalibration; }
 int			ESP8266SoilMoistureSensor::maxCalibration() 											{	return _maxCalibration; }
+
+// Measurement unit; If set to true, read() returns values between 0-100
+// If set to false (default), read90 returns CB value from 200-0
+void		setMeasurePercentage(bool measurePercentage) {_measurePercentage = measurePercentage; }
+bool		measurePercentage() { return _measurePercentage; }
 

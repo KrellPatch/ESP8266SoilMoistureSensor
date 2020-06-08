@@ -48,6 +48,7 @@ private:
 	bool		_continuous;
 	int			_minCalibration;
 	int			_maxCalibration;
+	bool		_measurePercentage;
 };
 
 #endif /* ESP8266SOILMOISTURESENSOR_H_ */
