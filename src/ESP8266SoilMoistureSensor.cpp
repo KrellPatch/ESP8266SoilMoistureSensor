@@ -7,22 +7,25 @@
 
 #include "ESP8266SoilMoistureSensor.h"
 
-ESP8266SoilMoistureSensor::ESP8266SoilMoistureSensor(uint8_t readPin, uint8_t powerPin) :
+ESP8266SoilMoistureSensor::ESP8266SoilMoistureSensor(const uint8_t readPin = PIN_A0, const uint8_t powerPin = D2) :
 	_readPin {readPin},
-	_powerPin {powerPin}
+	_powerPin {powerPin},
 	_samples {10},
 	_continuous {false},
 	_minCalibration {5},
 	_maxCalibration {650}, // Default value for 3.3V VCC, may be higher when using 5V
 	_measurePercentage {false}
-{}
+{
+	// ToDo: check if all pin values are suitable, otherwise use switch()
+	if(_powerPin) pinMode(_powerPin, OUTPUT);
+}
 
-ESP8266SoilMoistureSensor::ESP8266SoilMoistureSensor(uint8_t readPin) :
-	ESP8266SoilMoistureSensor {readPin, 0}
+ESP8266SoilMoistureSensor::ESP8266SoilMoistureSensor(const uint8_t readPin = PIN_A0) :
+	ESP8266SoilMoistureSensor {readPin, D2}
 {}
 
 ESP8266SoilMoistureSensor::ESP8266SoilMoistureSensor() :
-	ESM8266SoilMoistureSensor {0, 0}
+	ESP8266SoilMoistureSensor {PIN_A0, D2}
 {}
 
 ESP8266SoilMoistureSensor::~ESP8266SoilMoistureSensor() {}
@@ -36,10 +39,13 @@ int ESP8266SoilMoistureSensor::read() {
 
 	// If not continuous, set powerPin high
 	if(!_continuous && _powerPin) digitalWrite(_powerPin, HIGH);
+	delay(10);
+
 	// measurements
 	for(int i = 0; i < _samples; ++i) {
 		value += analogRead(_readPin);
-		// ToDO: need delay here?
+		// Need delay here? Lets try
+		delay(10);
 	}
 	// reset powerpin if required
 	if(!_continuous && _powerPin) digitalWrite(_powerPin, LOW);
@@ -49,7 +55,7 @@ int ESP8266SoilMoistureSensor::read() {
 
 	if(_measurePercentage) {
 		// Return %H
-		value = map(value, _minCalibration, _maxCalibration, 0, 100)
+		value = map(value, _minCalibration, _maxCalibration, 0, 100);
 	} else {
 		// return CB value (inverted, 200 = dry, 0 = wet)
 		value = map(value, _maxCalibration, _minCalibration, 0, 200);
@@ -84,7 +90,7 @@ void 		ESP8266SoilMoistureSensor::setMaxCalibration(int maxCalibration) 	{	_maxC
 int			ESP8266SoilMoistureSensor::maxCalibration() 											{	return _maxCalibration; }
 
 // Measurement unit; If set to true, read() returns values between 0-100
-// If set to false (default), read90 returns CB value from 200-0
-void		setMeasurePercentage(bool measurePercentage) {_measurePercentage = measurePercentage; }
-bool		measurePercentage() { return _measurePercentage; }
+// If set to false (default), read() returns CB value from 200-0
+void		ESP8266SoilMoistureSensor::setMeasurePercentage(bool measurePercentage) {_measurePercentage = measurePercentage; }
+bool		ESP8266SoilMoistureSensor::measurePercentage() { return _measurePercentage; }
 

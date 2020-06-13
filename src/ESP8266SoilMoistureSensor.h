@@ -12,6 +12,8 @@
 
 #define VERSION_ 1.0
 
+#define __DEBUG
+
 #ifdef __DEBUG
   #define DPRINT(...)    Serial.print(__VA_ARGS__)     //DPRINT is a macro, debug print
   #define DPRINTLN(...)  Serial.println(__VA_ARGS__)   //DPRINTLN is a macro, debug print with new line
@@ -20,11 +22,20 @@
   #define DPRINTLN(...)   //now defines a blank line
 #endif
 
+// Creates a (Robotdyn) Soil Moisture sensor
+// that measures soil moisture levels via default analog A0 pin
+// Power to the sensor is provided during read cycles using (default) D2 pin
+// Use read() function to read the values. Values are in CB (200-0) where 200 is dry.
+// Vaslues can also be expressed as % humidity by settinf measurePercentage to true.
+// Sensor can be calibrated for lowest and highest values through min- and
+// maxCalibration setters.
+// Power to the sensor can also be continuous (not recommended, shotens sensor life)
+// by setting continuous to true.
 class ESP8266SoilMoistureSensor {
 public:
 	ESP8266SoilMoistureSensor();
-	ESP8266SoilMoistureSensor(uint8_t);
-	ESP8266SoilMoistureSensor(uint8_t, uint8_t);
+	ESP8266SoilMoistureSensor(const uint8_t);
+	ESP8266SoilMoistureSensor(const uint8_t, const uint8_t);
 	virtual ~ESP8266SoilMoistureSensor();
 
 	int 		read();
