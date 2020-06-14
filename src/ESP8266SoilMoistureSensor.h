@@ -25,11 +25,11 @@
 // Creates a (Robotdyn) Soil Moisture sensor
 // that measures soil moisture levels via default analog A0 pin
 // Power to the sensor is provided during read cycles using (default) D2 pin
-// Use read() function to read the values. Values are in CB (200-0) where 200 is dry.
-// Vaslues can also be expressed as % humidity by settinf measurePercentage to true.
+// Use value() function to read the values. Values are in centiBar (200-0) where 200 is dry.
+// Values can also be expressed as % humidity by setting centiBar to false.
 // Sensor can be calibrated for lowest and highest values through min- and
 // maxCalibration setters.
-// Power to the sensor can also be continuous (not recommended, shotens sensor life)
+// Power to the sensor can also be continuous (not recommended, shortens sensor life)
 // by setting continuous to true.
 class ESP8266SoilMoistureSensor {
 public:
@@ -38,11 +38,11 @@ public:
 	ESP8266SoilMoistureSensor(const uint8_t, const uint8_t);
 	virtual ~ESP8266SoilMoistureSensor();
 
-	int 		read();
+	int 		value();
 	void 		setSamples(int);
 	int			samples();
-	void 		setContinuous(bool);
-	bool 		continuous();
+	void 		powerSave(bool);
+	bool 		powerSave();
 	void		setReadPin(uint8_t);
 	uint8_t	readPin();
 	void		setPowerPin(uint8_t);
@@ -51,8 +51,8 @@ public:
 	int			minCalibration();
 	void		setMaxCalibration(int);
 	int			maxCalibration();
-	void		setMeasurePercentage(bool);
-	bool		measurePercentage();
+	void		centiBar(bool);
+	bool		centiBar();
 
 private:
 	uint8_t	_readPin;
@@ -61,7 +61,7 @@ private:
 	bool		_continuous;
 	int			_minCalibration;
 	int			_maxCalibration;
-	bool		_measurePercentage;
+	bool		_centiBar;
 };
 
 #endif /* ESP8266SOILMOISTURESENSOR_H_ */

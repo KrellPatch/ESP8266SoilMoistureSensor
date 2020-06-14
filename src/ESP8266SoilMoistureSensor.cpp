@@ -11,10 +11,10 @@ ESP8266SoilMoistureSensor::ESP8266SoilMoistureSensor(const uint8_t readPin = PIN
 	_readPin {readPin},
 	_powerPin {powerPin},
 	_samples {10},
-	_continuous {false},
+	_powerSave {true},
 	_minCalibration {5},
 	_maxCalibration {650}, // Default value for 3.3V VCC, may be higher when using 5V
-	_measurePercentage {false}
+	_centiBar {true}
 {
 	// ToDo: check if all pin values are suitable, otherwise use switch()
 	if(_powerPin) pinMode(_powerPin, OUTPUT);
@@ -32,14 +32,15 @@ ESP8266SoilMoistureSensor::~ESP8266SoilMoistureSensor() {}
 
 // Get a measurement from the sensor. Values are 0 to 200 CB
 // where 0 is WET and 200 is extremely dry
-int ESP8266SoilMoistureSensor::read() {
+// ToDo: rename to currentValue(), save lastValue for comparison purposes
+int ESP8266SoilMoistureSensor::value() {
 	int value = 0;
 
 	// ToDo: Rethink the logic of continuous and powerPin
 
 	// If not continuous, set powerPin high
-	if(!_continuous && _powerPin) digitalWrite(_powerPin, HIGH);
-	delay(10);
+	if(_powerSave && _powerPin) digitalWrite(_powerPin, HIGH);
+	delay(10); // Give sensor time to adjust to power
 
 	// measurements
 	for(int i = 0; i < _samples; ++i) {
@@ -48,17 +49,17 @@ int ESP8266SoilMoistureSensor::read() {
 		delay(10);
 	}
 	// reset powerpin if required
-	if(!_continuous && _powerPin) digitalWrite(_powerPin, LOW);
+	if(_powerSave && _powerPin) digitalWrite(_powerPin, LOW);
 
 	// Take average reading and remap to CB value (wet-dry, 0-200)
 	value /= _samples;
 
-	if(_measurePercentage) {
-		// Return %H
-		value = map(value, _minCalibration, _maxCalibration, 0, 100);
-	} else {
+	if(_centiBar) {
 		// return CB value (inverted, 200 = dry, 0 = wet)
 		value = map(value, _maxCalibration, _minCalibration, 0, 200);
+	} else {
+		// Return %H
+		value = map(value, _minCalibration, _maxCalibration, 0, 100);
 	}
 
 	return value;
@@ -78,8 +79,8 @@ void 		ESP8266SoilMoistureSensor::setReadPin(uint8_t readPin) 						{	_readPin =
 uint8_t ESP8266SoilMoistureSensor::readPin() 															{ return _readPin; }
 void 		ESP8266SoilMoistureSensor::setPowerPin(uint8_t powerPin) 					{ _powerPin = powerPin; }
 uint8_t	ESP8266SoilMoistureSensor::powerPin() 														{ return _powerPin; }
-void 		ESP8266SoilMoistureSensor::setContinuous(bool continuous) 				{ _continuous = continuous; }
-bool 		ESP8266SoilMoistureSensor::continuous() 													{ return _continuous; }
+void 		ESP8266SoilMoistureSensor::powerSave(bool powerSave) 							{ _powerSave = powerSave; }
+bool 		ESP8266SoilMoistureSensor::PowerSave() 														{ return _powerSave; }
 
 // Calibration values: set the minimum and maximum value returned by your sensor
 // This makes sure the lowest and highest values are consistently mapped to CP values
@@ -91,6 +92,6 @@ int			ESP8266SoilMoistureSensor::maxCalibration() 											{	return _maxCalibr
 
 // Measurement unit; If set to true, read() returns values between 0-100
 // If set to false (default), read() returns CB value from 200-0
-void		ESP8266SoilMoistureSensor::setMeasurePercentage(bool measurePercentage) {_measurePercentage = measurePercentage; }
-bool		ESP8266SoilMoistureSensor::measurePercentage() { return _measurePercentage; }
+void		ESP8266SoilMoistureSensor::centiBar(bool centiBar) {_centiBar = centiBar; }
+bool		ESP8266SoilMoistureSensor::centiBar() { return _centibar; }
 
