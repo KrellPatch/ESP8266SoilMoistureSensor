@@ -39,17 +39,17 @@ public:
 	virtual ~ESP8266SoilMoistureSensor();
 
 	int 		value();
-	void 		setSamples(int);
+	void 		samples(int);
 	int			samples();
 	void 		powerSave(bool);
 	bool 		powerSave();
-	void		setReadPin(uint8_t);
+	void		readPin(uint8_t);
 	uint8_t	readPin();
-	void		setPowerPin(uint8_t);
+	void		powerPin(uint8_t);
 	uint8_t	powerPin();
-	void		setMinCalibration(int);
+	void		minCalibration(int);
 	int			minCalibration();
-	void		setMaxCalibration(int);
+	void		maxCalibration(int);
 	int			maxCalibration();
 	void		centiBar(bool);
 	bool		centiBar();
@@ -58,7 +58,7 @@ private:
 	uint8_t	_readPin;
 	uint8_t	_powerPin;
 	int			_samples;
-	bool		_continuous;
+	bool		_powerSave;
 	int			_minCalibration;
 	int			_maxCalibration;
 	bool		_centiBar;
